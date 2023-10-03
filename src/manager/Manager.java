@@ -26,27 +26,11 @@ public class Manager {
         return ++id;
     }
 
-
-
     public void addNewTask(Task task) {
         task.setId(countId());
         tasks.put(task.getId(), task);
         System.out.println("id - " + task.getId() + " / " + task.getTittle() + " / " + task.getDescription());
     }
-
-
-
-
-
-
-    //     создается новый объект класса Task и добавляется в HashMap tsaks
-//    public void newTask(String tittle, String description) {
-//        Task task = new Task(tittle, description);
-//        tasks.put(task.getId(), task);
-//        System.out.println("id - " + task.getId() + " / " + task.getTittle() + " / " + task.getDescription());
-//    }
-
-
 
     public void printTaskById(int id) {
         Task task = tasks.get(id);
@@ -56,19 +40,9 @@ public class Manager {
         System.out.println("id - " + id + " / " + tittle + " / " + description + " / " + status);
     }
 
-
-    //    ищем и выводим task по id из созданных tasks
-//    public int getIdTask(int id) {
-//        Task task = tasks.get(id);
-//        return task.getId();
-//    }
-
-
-
     //    выводим все tasks, перебирая все id имеющихся task
     public void printAllTasks() {
         for (Integer id : tasks.keySet()) {
-            //TODO вывести все таски так как было в getIdTask
             printTaskById(id);
         }
     }
@@ -164,7 +138,6 @@ public class Manager {
     }
 
     private void calculateEpicStatus(int epicId) {
-        //TODO так же, этот метод должен использовать другой метод, который будет рассчитывать статус у эпика
         Epic epic = epics.get(epicId);
         ArrayList<Integer> subtasksIds = epic.getSubtaskId();
         Status oldStatus = epic.getStatus();
