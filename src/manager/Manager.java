@@ -14,21 +14,41 @@ public class Manager {
     protected HashMap<Integer, Epic> epics;
     protected HashMap<Integer, Subtask> subtasks;
 
+    int id = 1;
+
     public Manager() {
         tasks = new HashMap<>();
         epics = new HashMap<>();
         subtasks = new HashMap<>();
     }
 
-    //     создается новый объект класса Task и добавляется в HashMap tsaks
-    public void newTask(String tittle, String description) {
-        Task task = new Task(tittle, description);
+    private int countId() {
+        return ++id;
+    }
+
+
+
+    public void addNewTask(Task task) {
+        task.setId(countId());
         tasks.put(task.getId(), task);
         System.out.println("id - " + task.getId() + " / " + task.getTittle() + " / " + task.getDescription());
     }
 
-    //    ищем и выводим task по id из созданных tasks
-    public void getIdTask(int id) {
+
+
+
+
+
+    //     создается новый объект класса Task и добавляется в HashMap tsaks
+//    public void newTask(String tittle, String description) {
+//        Task task = new Task(tittle, description);
+//        tasks.put(task.getId(), task);
+//        System.out.println("id - " + task.getId() + " / " + task.getTittle() + " / " + task.getDescription());
+//    }
+
+
+
+    public void printTaskById(int id) {
         Task task = tasks.get(id);
         String tittle = task.getTittle();
         String description = task.getDescription();
@@ -36,21 +56,31 @@ public class Manager {
         System.out.println("id - " + id + " / " + tittle + " / " + description + " / " + status);
     }
 
+
+    //    ищем и выводим task по id из созданных tasks
+//    public int getIdTask(int id) {
+//        Task task = tasks.get(id);
+//        return task.getId();
+//    }
+
+
+
     //    выводим все tasks, перебирая все id имеющихся task
-    public void getAllTasks() {
+    public void printAllTasks() {
         for (Integer id : tasks.keySet()) {
-            getIdTask(id);
+            //TODO вывести все таски так как было в getIdTask
+            printTaskById(id);
         }
     }
 
     //    обновление task
-    public void updateTask(int taskId, String tittle, String description, Status status) {
-        Task task = tasks.get(taskId);
-        task.setTittle(tittle);
-        task.setDescription(description);
-        task.setStatus(status);
-        tasks.put(taskId, task);
-        System.out.println(taskId + " таска обновлена.");
+    public void updateTask(Task newTask) {
+        Task task = tasks.get(newTask.getId());
+        task.setTittle(newTask.getTittle());
+        task.setDescription(newTask.getDescription());
+        task.setStatus(newTask.getStatus());
+        tasks.put(newTask.getId(), task);
+        System.out.println(newTask.getId() + " таска обновлена.");
     }
 
     //    Удаление по id
@@ -60,14 +90,14 @@ public class Manager {
     }
 
     //    сздание эпика
-    public void newEpic(String tittle, String description) {
-        Epic epic = new Epic(tittle, description);
+    public void addNewEpic(Epic epic) {
+        epic.setId(countId());
         epics.put(epic.getId(), epic);
         System.out.println("id - " + epic.getId() + " / " + epic.getTittle() + " / " + epic.getDescription());
     }
 
     //    поиск эпика по id
-    public void getIdEpic(int id) {
+    public void printIdEpic(int id) {
         Epic epic = epics.get(id);
         String tittle = epic.getTittle();
         String description = epic.getDescription();
@@ -77,33 +107,33 @@ public class Manager {
     }
 
 //    Вывод всех эпиков
-    public void getAllEpics() {
+    public void printAllEpics() {
         for (Integer id : epics.keySet()) {
-            getIdEpic(id);
+            printIdEpic(id);
         }
     }
 
-//    создание subtast
-    public void newSubtask (String tittle, String description, int epicId) {
+//    создание subtask
+    public void addNewSubtask(Subtask subtask) {
+        subtask.setId(countId());
+        int epicId = subtask.getEpicId();
         Epic epic = epics.get(epicId);
         ArrayList<Integer> subtasksId = epic.getSubtaskId();
-        Subtask subtask = new Subtask(tittle, description, epicId);
         int subtaskId = subtask.getId();
         subtasks.put(subtaskId, subtask);
         subtasksId.add(subtaskId);
         epic.setSubtaskId(subtasksId);
 
         System.out.println("В эпик ID-" + epicId + " добавлен новый Subtask");
-        System.out.println("ID - " + subtaskId + " / " + tittle);
+        calculateEpicStatus(epicId);
     }
 
     // Метод для вывода всех эпиков с их подзадачами
-    public void getAllEpicsWithSubtasks() {
+    public void printAllEpicsWithSubtasks() {
         for (Integer epicId : epics.keySet()) {
             Epic epic = epics.get(epicId);
             String epicTitle = epic.getTittle();
             String epicDescription = epic.getDescription();
-            Status epicStatus = epic.getStatus();
             calculateEpicStatus(epicId);
 
             System.out.println("Эпик ID - " + epicId + " / " + epicTitle + " / " + epicDescription);
@@ -122,17 +152,19 @@ public class Manager {
     }
 
 //    обновление subtask
-    public void updateSubtask(int subId, String tittle ,String description, Status status) {
-        Subtask subtask = subtasks.get(subId);
-        subtask.setDescription(description);
-        subtask.setTittle(tittle);
-        subtask.setStatus(status);
-        subtasks.put(subId, subtask);
+    public void updateSubtask(Subtask newSubtask) {
+        Subtask subtask = subtasks.get(newSubtask.getId());
+        subtask.setDescription(newSubtask.getDescription());
+        subtask.setTittle(newSubtask.getTittle());
+        subtask.setStatus(newSubtask.getStatus());
+        subtasks.put(subtask.getId(), subtask);
 
-        System.out.println("id - " + subId + " / " + tittle + " / " + description + " / " + status);
+        System.out.println("id - " + subtask.getId() + " / " + subtask.getTittle() + " / " + subtask.getDescription() + " / " + subtask.getStatus());
+        calculateEpicStatus(subtask.getEpicId());
     }
 
     private void calculateEpicStatus(int epicId) {
+        //TODO так же, этот метод должен использовать другой метод, который будет рассчитывать статус у эпика
         Epic epic = epics.get(epicId);
         ArrayList<Integer> subtasksIds = epic.getSubtaskId();
         Status oldStatus = epic.getStatus();
