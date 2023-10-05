@@ -32,6 +32,20 @@ public class Manager {
         System.out.println("id - " + task.getId() + " / " + task.getTittle() + " / " + task.getDescription());
     }
 
+//    возвращение Task по id
+    public Task getTaskById(int taskId) {
+        return tasks.get(taskId);
+    }
+
+    // возврат Sabtask по ID
+    public Subtask getSubtaskById(int subId) {
+        return subtasks.get(subId);
+    }
+
+//  возвращение Epic по id
+    public Epic getEpicById(int epicId) {
+        return epics.get(epicId);
+    }
     public void printTaskById(int id) {
         Task task = tasks.get(id);
         String tittle = task.getTittle();
@@ -61,6 +75,21 @@ public class Manager {
     public void deleteTask(int taskId) {
         tasks.remove(taskId);
         System.out.println("id - " + taskId + " значение удаленно.");
+    }
+
+    public void deleteSubtaskById(int subId) {
+        if (subtasks.containsKey(subId)) {
+            Subtask subtask = subtasks.get(subId);
+            int epicId = subtask.getEpicId();
+            Epic epic = epics.get(epicId);
+            ArrayList<Integer> subtaskIds = epic.getSubtaskId();
+            subtaskIds.remove(Integer.valueOf(subId));
+            subtasks.remove(subId);
+            System.out.println("Subtask ID-" + subId + " удален.");
+            calculateEpicStatus(epicId);
+        } else {
+            System.out.println("Subtask с ID-" + subId + " не найден.");
+        }
     }
 
     //    сздание эпика

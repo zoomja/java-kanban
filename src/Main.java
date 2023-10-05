@@ -63,13 +63,15 @@ public class Main {
         System.out.println(" ");
         m.printAllEpics();
         System.out.println(".............................................");
-        System.out.println(" ");
+        m.deleteTask(3);
+        m.printAllTasks();
+        System.out.println(".............................................");
+        m.deleteSubtaskById(9);
+        System.out.println(".............................................");
+        m.printAllEpicsWithSubtasks();
+        System.out.println(".............................................");
         m.deleteAllEpics();
         System.out.println(".............................................");
-        System.out.println(" ");
-
-
-
 
     }
 }
