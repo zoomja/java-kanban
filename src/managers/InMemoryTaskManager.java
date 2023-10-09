@@ -15,7 +15,7 @@ public class InMemoryTaskManager implements TaskManager {
     protected HashMap<Integer, Task> tasks;
     protected HashMap<Integer, Epic> epics;
     protected HashMap<Integer, Subtask> subtasks;
-    private List<Task> history = new ArrayList<>();
+    private HistoryManager historyManager;
 
     int id = 1;
 
@@ -23,12 +23,11 @@ public class InMemoryTaskManager implements TaskManager {
         tasks = new HashMap<>();
         epics = new HashMap<>();
         subtasks = new HashMap<>();
-        history = new ArrayList<>();
+        historyManager = Managers.getDefaultHistoryManager();
     }
 
 
-    @Override
-    public int countId() {
+    private int countId() {
         return ++id;
     }
 
@@ -44,7 +43,7 @@ public class InMemoryTaskManager implements TaskManager {
     public Task getTaskById(int taskId) {
         Task task = tasks.get(taskId);
         if (task != null) {
-            addToHistory(task);
+            historyManager.addTask(task);
         }
         return tasks.get(taskId);
     }
@@ -55,7 +54,7 @@ public class InMemoryTaskManager implements TaskManager {
     public Subtask getSubtaskById(int subId) {
         Subtask subtask = subtasks.get(subId);
         if (subtask != null) {
-            addToHistory(subtask);
+            historyManager.addTask(subtask);
         }
         return subtasks.get(subId);
     }
@@ -65,21 +64,15 @@ public class InMemoryTaskManager implements TaskManager {
     public Epic getEpicById(int epicId) {
         Epic epic = epics.get(epicId);
         if (epic != null) {
-            addToHistory(epic);
+            historyManager.addTask(epic);
         }
         return epics.get(epicId);
     }
 
-    private void addToHistory(Task task) {
-        history.add(task);
-        if (history.size() > 10) {
-            history.remove(0); // Ограничиваем историю до 10 элементов
-        }
-    }
 
     @Override
     public List<Task> getHistory() {
-        return history;
+        return historyManager.getHistory();
     }
 
 
@@ -214,7 +207,6 @@ public class InMemoryTaskManager implements TaskManager {
         calculateEpicStatus(subtask.getEpicId());
     }
 
-    @Override
     public void calculateEpicStatus(int epicId) {
         Epic epic = epics.get(epicId);
         ArrayList<Integer> subtasksIds = epic.getSubtaskId();

@@ -1,19 +1,18 @@
-import managers.InMemoryTaskManager;
+import managers.Managers;
 import managers.TaskManager;
 import tasks.Epic;
 import tasks.Status;
 import tasks.Subtask;
 import tasks.Task;
 
-import java.util.List;
 
 
 public class Main {
 
     public static void main(String[] args) {
 
-        TaskManager m = new InMemoryTaskManager();
-        List<Task> history = m.getHistory();
+        TaskManager m = Managers.getDefault();
+
 
         System.out.println("Создали 3 таски: ");
         Task taskOne = new Task("Утро ", "умыться");
@@ -67,26 +66,20 @@ public class Main {
         System.out.println(" ");
         m.printAllEpics();
         System.out.println(".............................................");
-//        m.deleteTask(3);
-//        m.printAllTasks();
-//        System.out.println(".............................................");
-//        m.deleteSubtaskById(9);
-//        System.out.println(".............................................");
-//        m.printAllEpicsWithSubtasks();
-//        System.out.println(".............................................");
-//        m.deleteAllEpics();
-//        System.out.println(".............................................");
         m.getEpicById(6);
         m.getTaskById(2);
         m.getTaskById(3);
         m.getSubtaskById(9);
-        System.out.println(".............................................");
-        m.getHistory();
-        System.out.println(".............................................");
 
+        for (int i = 0; i <= 8; i++) {
+            Task task = new Task("Утро " + i, "умыться " + i);
+            m.addNewTask(task);
+            m.getTaskById(task.getId());
+        }
 
         System.out.println("История просмотренных задач:");
-        for (Task task : history) {
+        System.out.println(m.getHistory().size());
+        for (Task task : m.getHistory()) {
             System.out.println("ID: " + task.getId() + " " + task.getTittle() + " " + task.getDescription() + " " + task.getStatus());
             System.out.println("--------------");
         }
