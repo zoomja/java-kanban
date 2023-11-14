@@ -274,4 +274,9 @@ public class InMemoryTaskManager implements TaskManager {
             System.out.println("Эпик с ID-" + epicId + " не найден.");
         }
     }
+
+    @Override
+    public void remove(int id) {
+        historyManager.remove(id);
+    }
 }
