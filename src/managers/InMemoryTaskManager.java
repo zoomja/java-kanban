@@ -8,13 +8,14 @@ import tasks.Task;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class InMemoryTaskManager implements TaskManager {
 
 
-    protected HashMap<Integer, Task> tasks;
-    protected HashMap<Integer, Epic> epics;
-    protected HashMap<Integer, Subtask> subtasks;
+    protected Map<Integer, Task> tasks;
+    protected Map<Integer, Epic> epics;
+    protected Map<Integer, Subtask> subtasks;
     private HistoryManager historyManager;
 
     int id = 1;
