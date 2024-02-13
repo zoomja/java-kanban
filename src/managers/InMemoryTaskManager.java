@@ -16,7 +16,7 @@ public class InMemoryTaskManager implements TaskManager {
     protected Map<Integer, Task> tasks;
     protected Map<Integer, Epic> epics;
     protected Map<Integer, Subtask> subtasks;
-    private HistoryManager historyManager;
+    protected final HistoryManager historyManager;
 
     int id = 1;
 
@@ -103,6 +103,21 @@ public class InMemoryTaskManager implements TaskManager {
         task.setStatus(newTask.getStatus());
         tasks.put(newTask.getId(), task);
         System.out.println(newTask.getId() + " таска обновлена.");
+    }
+
+    @Override
+    public List<Task> getAllTasks() {
+        return new ArrayList<>(tasks.values());
+    }
+
+    @Override
+    public List<Epic> getALlEpics() {
+        return new ArrayList<>(epics.values());
+    }
+
+    @Override
+    public List<Subtask> getAllSubTasks() {
+        return new ArrayList<>(subtasks.values());
     }
 
     //    Удаление по id
@@ -280,4 +295,5 @@ public class InMemoryTaskManager implements TaskManager {
     public void remove(int id) {
         historyManager.remove(id);
     }
+
 }

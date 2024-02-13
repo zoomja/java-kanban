@@ -1,11 +1,7 @@
-import managers.Managers;
-import managers.TaskManager;
+import managers.*;
 import tasks.Epic;
-import tasks.Status;
 import tasks.Subtask;
 import tasks.Task;
-import java.util.List;
-
 
 
 public class Main {
@@ -14,68 +10,106 @@ public class Main {
 
         TaskManager m = Managers.getDefault();
 
+        TaskManager fileManager = new FileBackedTasksManager();
 
-        System.out.println("Создали 2 таски: ");
-        Task taskOne = new Task("Таска 1 ", "Описание 1");
-        Task taskTwo = new Task("Таска 2 ", "Описание 2");
-        m.addNewTask(taskOne);
-        m.addNewTask(taskTwo);
-        System.out.println(".............................................");
-        System.out.println(" ");
-        System.out.println("Создали 1 эпик с тремя подзадачами: ");
-        Epic epicOne = new Epic("Эпик 1 ", "описание Эпика 1");
-        m.addNewEpic(epicOne);
-        Subtask subtaskOne = new Subtask("Сабтаск 1 ", "для эпика 1", 4);
-        m.addNewSubtask(subtaskOne);
-        Subtask subtaskTwo = new Subtask("Сабтаск 2 ", "для эпика 1", 4);
-        m.addNewSubtask(subtaskTwo);
-        Subtask subtaskThree = new Subtask("Сабтаск 3 ", "для эпика 1", 4);
-        m.addNewSubtask(subtaskThree);
-        System.out.println(".............................................");
-        System.out.println(" ");
-        System.out.println("Создали 1 эпик без подзадач: ");
-        Epic epicTwo = new Epic("Эпик 2 ", "описание Эпика 2");
-        m.addNewEpic(epicTwo);
 
-        m.getEpicById(epicTwo.getId());
-        m.getTaskById(taskOne.getId());
-        m.getTaskById(taskTwo.getId());
-        m.getTaskById(taskOne.getId());
-        m.getTaskById(taskTwo.getId());
-        m.getSubtaskById(subtaskTwo.getId());
-        m.getSubtaskById(subtaskOne.getId());
-        m.getSubtaskById(subtaskTwo.getId());
-        m.getEpicById(epicOne.getId());
+        Task taskOne = new Task("Таска 1 ", "Описание 1", TaskType.TASK);
+        Task taskTwo = new Task("Таска 2 ", "Описание 2", TaskType.TASK);
+        Task taskThree = new Task("Таска 3 ", "Описание 3", TaskType.TASK);
+        fileManager.addNewTask(taskOne);
+        fileManager.addNewTask(taskTwo);
+        fileManager.addNewTask(taskThree);
+        Epic epicOne = new Epic("Эпик 1", "описание для эпика 1", TaskType.EPIC);
+        fileManager.addNewEpic(epicOne);
+        Subtask subtaskOne = new Subtask("подзадача 1", "подзадача для эпика 1", epicOne.getId(), TaskType.SUBTASK);
+        Subtask subtaskTwo = new Subtask("подзадача 2", "подзадача для эпика 1", epicOne.getId(), TaskType.SUBTASK);
+        fileManager.addNewSubtask(subtaskOne);
+        fileManager.addNewSubtask(subtaskTwo);
+        fileManager.getTaskById(taskTwo.getId());
+        fileManager.getTaskById(taskThree.getId());
+        fileManager.getEpicById(epicOne.getId());
+        fileManager.getSubtaskById(subtaskOne.getId());
+        Task taskFour = new Task("задача 4", "описание задачи 4", TaskType.TASK);
+        fileManager.addNewTask(taskFour);
+        fileManager.getTaskById(taskFour.getId());
 
-        System.out.println(".............................................");
-        System.out.println(" ");
 
-        System.out.println("История просмотренных задач:");
-        System.out.println(m.getHistory().size());
-        for (Task task : m.getHistory()) {
-            System.out.println("ID: " + task.getId() + " " + task.getTittle() + " " + task.getDescription() + " " + task.getStatus());
-            System.out.println("--------------");
-        }
 
-        m.remove(taskOne.getId());
+        System.out.println("История после восстановления из файла");
+        fileManager.getHistory().forEach(h -> {
+            System.out.println("ID: " + h.getId() + " | Название: " + h.getTittle() + " | Описание: " + h.getDescription());
+        });
 
-        System.out.println("История просмотренных задач после удаления:");
-        System.out.println(m.getHistory().size());
-        for (Task task : m.getHistory()) {
-            System.out.println("ID: " + task.getId() + " " + task.getTittle() + " " + task.getDescription() + " " + task.getStatus());
-            System.out.println("--------------");
-        }
+        Task task = new Task("задача 1", "добавление задачи после восстановления", TaskType.TASK);
+        fileManager.addNewTask(task);
 
-        m.remove(epicOne.getId());
-        m.remove(subtaskOne.getId());
-        m.remove(subtaskTwo.getId());
 
-        System.out.println("История просмотренных задач после удаления:");
-        System.out.println(m.getHistory().size());
-        for (Task task : m.getHistory()) {
-            System.out.println("ID: " + task.getId() + " " + task.getTittle() + " " + task.getDescription() + " " + task.getStatus());
-            System.out.println("--------------");
-        }
+
+
+
+
+
+//        System.out.println("Создали 2 таски: ");
+//        Task taskOne = new Task("Таска 1 ", "Описание 1");
+//        Task taskTwo = new Task("Таска 2 ", "Описание 2");
+//        m.addNewTask(taskOne);
+//        m.addNewTask(taskTwo);
+//        System.out.println(".............................................");
+//        System.out.println(" ");
+//        System.out.println("Создали 1 эпик с тремя подзадачами: ");
+//        Epic epicOne = new Epic("Эпик 1 ", "описание Эпика 1");
+//        m.addNewEpic(epicOne);
+//        Subtask subtaskOne = new Subtask("Сабтаск 1 ", "для эпика 1", 4);
+//        m.addNewSubtask(subtaskOne);
+//        Subtask subtaskTwo = new Subtask("Сабтаск 2 ", "для эпика 1", 4);
+//        m.addNewSubtask(subtaskTwo);
+//        Subtask subtaskThree = new Subtask("Сабтаск 3 ", "для эпика 1", 4);
+//        m.addNewSubtask(subtaskThree);
+//        System.out.println(".............................................");
+//        System.out.println(" ");
+//        System.out.println("Создали 1 эпик без подзадач: ");
+//        Epic epicTwo = new Epic("Эпик 2 ", "описание Эпика 2");
+//        m.addNewEpic(epicTwo);
+//
+//        m.getEpicById(epicOne.getId());
+//        m.getTaskById(taskOne.getId());
+//        m.getTaskById(taskTwo.getId());
+//        m.getTaskById(taskOne.getId());
+//        m.getTaskById(taskTwo.getId());
+//        m.getSubtaskById(subtaskTwo.getId());
+//        m.getSubtaskById(subtaskOne.getId());
+//        m.getSubtaskById(subtaskTwo.getId());
+//        m.getEpicById(epicOne.getId());
+//
+//        System.out.println(".............................................");
+//        System.out.println(" ");
+//
+//        System.out.println("История просмотренных задач:");
+//        System.out.println(m.getHistory().size());
+//        for (Task task : m.getHistory()) {
+//            System.out.println("ID: " + task.getId() + " " + task.getTittle() + " " + task.getDescription() + " " + task.getStatus());
+//            System.out.println("--------------");
+//        }
+//
+//        m.remove(taskOne.getId());
+//
+//        System.out.println("История просмотренных задач после удаления:");
+//        System.out.println(m.getHistory().size());
+//        for (Task task : m.getHistory()) {
+//            System.out.println("ID: " + task.getId() + " " + task.getTittle() + " " + task.getDescription() + " " + task.getStatus());
+//            System.out.println("--------------");
+//        }
+//
+//        m.remove(epicOne.getId());
+//        m.remove(subtaskOne.getId());
+//        m.remove(subtaskTwo.getId());
+//
+//        System.out.println("История просмотренных задач после удаления:");
+//        System.out.println(m.getHistory().size());
+//        for (Task task : m.getHistory()) {
+//            System.out.println("ID: " + task.getId() + " " + task.getTittle() + " " + task.getDescription() + " " + task.getStatus());
+//            System.out.println("--------------");
+//        }
 
 
 
