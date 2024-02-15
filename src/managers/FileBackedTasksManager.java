@@ -83,12 +83,6 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
     }
 
     @Override
-    public void printAllEpicsWithSubtasks() {
-        super.printAllEpicsWithSubtasks();
-        save();
-    }
-
-    @Override
     public void updateSubtask(Subtask newSubtask) {
         super.updateSubtask(newSubtask);
         save();
@@ -107,32 +101,8 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
     }
 
     @Override
-    public void remove(int id) {
-        super.remove(id);
-        save();
-    }
-
-    @Override
     public void printTaskById(int id) {
         super.printTaskById(id);
-        save();
-    }
-
-    @Override
-    public void printAllTasks() {
-        super.printAllTasks();
-        save();
-    }
-
-    @Override
-    public void printIdEpic(int id) {
-        super.printIdEpic(id);
-        save();
-    }
-
-    @Override
-    public void printAllEpics() {
-        super.printAllEpics();
         save();
     }
 

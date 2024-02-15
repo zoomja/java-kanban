@@ -24,4 +24,10 @@ public class Subtask extends Task {
     public void setEpicId(int epicId) {
         this.epicId = epicId;
     }
+
+    @Override
+    public String toString() {
+        String separator = ",";
+        return getId() + separator + getTaskType() + separator + getTittle() + separator + getStatus() + separator + getDescription() + separator + getEpicId();
+    }
 }
