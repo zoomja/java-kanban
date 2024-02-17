@@ -11,7 +11,7 @@ import java.io.IOException;
 
 public class Csv {
 
-    private static final String DEFAULT_FILE_NAME = "src/resources/test_data.csv";
+    public static final String DEFAULT_FILE_NAME = "src/resources/test_data.csv";
 
     public static Task fromString(String value) {
         String[] lines = value.split(",");
