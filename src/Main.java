@@ -4,9 +4,9 @@ import managers.TaskType;
 import tasks.Epic;
 import tasks.Subtask;
 import tasks.Task;
-import test.Test;
 
 import java.io.File;
+import java.time.LocalDateTime;
 
 public class Main {
 
@@ -17,21 +17,44 @@ public class Main {
 //        test.test_Utils();
 //        test.test_after_close();
 
-//        надеюсь я приваьно сделал, но я не совсем понимаю какой смысл это этого
+
 
         File file = new File(Csv.DEFAULT_FILE_NAME);
         FileBackedTasksManager manager1 = new FileBackedTasksManager(file);
+        // Создание продолжительности и времени начала
+        LocalDateTime startTime = LocalDateTime.now(); // Текущее время
 
 
-        manager1.addNewTask(new Task("Задача 1", "Описание задачи 1", TaskType.TASK));
-        Epic epic = new Epic("Эпик 1", "Описание эпика 1", TaskType.EPIC);
-        manager1.addNewEpic(epic);
-        manager1.addNewSubtask(new Subtask("Подзадача 1", "Описание подзадачи 1", epic.getId(), TaskType.SUBTASK));
+        Task taskOne = new Task("Таска 1 ", "Описание 1", TaskType.TASK, 43800, startTime);
+        Task taskDva = new Task("Таска 2 ", "Описание 2", TaskType.TASK, 43800, startTime.plusMonths(1));
+        Task taskThree = new Task("Таска 3 ", "Описание 3", TaskType.TASK, 43800, startTime.minusMonths(1));
 
-        // Имитация просмотра задач для заполнения истории
-        manager1.getTaskById(1);
-        manager1.getEpicById(2);
-        manager1.getSubtaskById(3);
+        Epic epicOne = new Epic("epic1", "Эпик 1 ", TaskType.EPIC);
+        manager1.addNewEpic(epicOne);
+
+        Subtask subtaskOne = new Subtask("SUB1", "OPIS1", epicOne.getId(), TaskType.SUBTASK, 1440, LocalDateTime.now());
+        Subtask subtaskDva = new Subtask("SUB2", "OPIS2", epicOne.getId(), TaskType.SUBTASK, 1440, LocalDateTime.now().plusMonths(1));
+        Subtask subtaskThree = new Subtask("SUB3", "OPIS3", epicOne.getId(), TaskType.SUBTASK, 1440, LocalDateTime.now().plusMonths(5));
+
+        manager1.addNewTask(taskOne);
+        manager1.addNewTask(taskDva);
+        manager1.addNewTask(taskThree);
+
+
+        manager1.addNewSubtask(subtaskOne);
+        manager1.addNewSubtask(subtaskDva);
+        manager1.addNewSubtask(subtaskThree);
+
+        System.out.println(manager1.getSubtaskById(subtaskOne.getId()).toString());
+        System.out.println(manager1.getSubtaskById(subtaskDva.getId()).toString());
+        System.out.println(manager1.getSubtaskById(subtaskThree.getId()).toString());
+        System.out.println(manager1.getEpicById(epicOne.getId()).toString());
+        System.out.println(manager1.getTaskById(taskOne.getId()));
+        System.out.println(manager1.getTaskById(taskDva.getId()));
+        System.out.println(manager1.getTaskById(taskThree.getId()));
+
+        manager1.getPrioritizedTasks().forEach(t -> System.out.println(t.getTittle()));
+        System.out.print(manager1.getPrioritizedTasks().stream().count());
 
 
         FileBackedTasksManager manager2 = FileBackedTasksManager.loadFromFile(file);

@@ -108,7 +108,7 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
 
     public void save() {
         try (FileWriter fileWriter = new FileWriter(defaultFile)) {
-            fileWriter.write("id,type,name,status,description,epic\n");
+            fileWriter.write("id,type,name,status,description,startTime,endTime,duration,epic\n");
             for (Task task : getAllTasks()) {
                 fileWriter.write(task.toString());
                 fileWriter.write(newLine);
@@ -156,8 +156,7 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
             }
         }
 
-        int maxId = getMaxId(lines.subList(1, lines.size() - 2));
-        fileBackedTasksManager.getTaskById(maxId++);
+        fileBackedTasksManager.id = getMaxId(lines.subList(1, lines.size() - 2)) + 1;
 
         List<Integer> ids = historyFromString(lines.get(lines.size() - 1));
         for (Integer id : ids) {
@@ -189,43 +188,43 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
         return subtasks.get(id);
     }
 
-    public static void main(String[] args) {
-
-        File file = new File(Csv.DEFAULT_FILE_NAME);
-        FileBackedTasksManager manager1 = new FileBackedTasksManager(file);
-
-        Task taskOne = new Task("Таска 1 ", "Описание 1", TaskType.TASK);
-        Task taskTwo = new Task("Таска 2 ", "Описание 2", TaskType.TASK);
-        Task taskThree = new Task("Таска 3 ", "Описание 3", TaskType.TASK);
-        manager1.addNewTask(taskOne);
-        manager1.addNewTask(taskTwo);
-        manager1.addNewTask(taskThree);
-        Epic epicOne = new Epic("Эпик 1", "описание для эпика 1", TaskType.EPIC);
-        manager1.addNewEpic(epicOne);
-        Subtask subtaskOne = new Subtask("подзадача 1", "подзадача для эпика 1", epicOne.getId(), TaskType.SUBTASK);
-        Subtask subtaskTwo = new Subtask("подзадача 2", "подзадача для эпика 1", epicOne.getId(), TaskType.SUBTASK);
-        manager1.addNewSubtask(subtaskOne);
-        manager1.addNewSubtask(subtaskTwo);
-        manager1.getTaskById(taskTwo.getId());
-        manager1.getTaskById(taskThree.getId());
-        manager1.getEpicById(epicOne.getId());
-        manager1.getSubtaskById(subtaskOne.getId());
-        Task taskFour = new Task("задача 4", "описание задачи 4", TaskType.TASK);
-        manager1.addNewTask(taskFour);
-        manager1.getTaskById(taskFour.getId());
-
-
-        file = Csv.createIfFileNotExist();
-        FileBackedTasksManager manager2 = FileBackedTasksManager.loadFromFile(file);
-
-
-        System.out.println("История после восстановления из файла");
-        manager2.getHistory().forEach(h -> {
-        System.out.println("ID: " + h.getId() + " | Название: " + h.getTittle() + " | Описание: " + h.getDescription());
-    });
-
-    Task task = new Task("задача 1", "добавление задачи после восстановления", TaskType.TASK);
-        manager2.addNewTask(task);
-
-    }
+//    public static void main(String[] args) {
+//
+//        File file = new File(Csv.DEFAULT_FILE_NAME);
+//        FileBackedTasksManager manager1 = new FileBackedTasksManager(file);
+//
+//        Task taskOne = new Task("Таска 1 ", "Описание 1", TaskType.TASK);
+//        Task taskTwo = new Task("Таска 2 ", "Описание 2", TaskType.TASK);
+//        Task taskThree = new Task("Таска 3 ", "Описание 3", TaskType.TASK);
+//        manager1.addNewTask(taskOne);
+//        manager1.addNewTask(taskTwo);
+//        manager1.addNewTask(taskThree);
+//        Epic epicOne = new Epic("Эпик 1", "описание для эпика 1", TaskType.EPIC);
+//        manager1.addNewEpic(epicOne);
+//        Subtask subtaskOne = new Subtask("подзадача 1", "подзадача для эпика 1", epicOne.getId(), TaskType.SUBTASK);
+//        Subtask subtaskTwo = new Subtask("подзадача 2", "подзадача для эпика 1", epicOne.getId(), TaskType.SUBTASK);
+//        manager1.addNewSubtask(subtaskOne);
+//        manager1.addNewSubtask(subtaskTwo);
+//        manager1.getTaskById(taskTwo.getId());
+//        manager1.getTaskById(taskThree.getId());
+//        manager1.getEpicById(epicOne.getId());
+//        manager1.getSubtaskById(subtaskOne.getId());
+//        Task taskFour = new Task("задача 4", "описание задачи 4", TaskType.TASK);
+//        manager1.addNewTask(taskFour);
+//        manager1.getTaskById(taskFour.getId());
+//
+//
+//        file = Csv.createIfFileNotExist();
+//        FileBackedTasksManager manager2 = FileBackedTasksManager.loadFromFile(file);
+//
+//
+//        System.out.println("История после восстановления из файла");
+//        manager2.getHistory().forEach(h -> {
+//        System.out.println("ID: " + h.getId() + " | Название: " + h.getTittle() + " | Описание: " + h.getDescription());
+//    });
+//
+//    Task task = new Task("задача 1", "добавление задачи после восстановления", TaskType.TASK);
+//        manager2.addNewTask(task);
+//
+//    }
 }
