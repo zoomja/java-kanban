@@ -1,11 +1,8 @@
-package test;
+package test.managers;
 
 import exceptions.CheckOverTimeException;
-import managers.Managers;
-import managers.TaskManager;
+import interfaces.TaskManager;
 import managers.TaskType;
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import tasks.Epic;
 import tasks.Status;
@@ -13,21 +10,12 @@ import tasks.Subtask;
 import tasks.Task;
 
 import java.time.LocalDateTime;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-public class TaskManagerTest {
+public class TaskManagerTest<T extends TaskManager> {
 
-    TaskManager manager;
-
-    @BeforeEach
-    public void setUp() {
-        manager = Managers.getDefault();
-    }
+    T manager;
 
     @Test
     public void checkOverTimeInTask() {
@@ -104,9 +92,9 @@ public class TaskManagerTest {
 
     @Test
     public void updateTask() {
-        Task task = new Task("Task", "task_description", TaskType.TASK, 60, LocalDateTime.now());
+        Task task = new Task("Task", "task_description", TaskType.TASK, 20, LocalDateTime.now());
         manager.addNewTask(task);
-        Task newTask = new Task(task.getId(), "Task_upd", "task_description_upd", Status.IN_Progress, TaskType.TASK, 60, LocalDateTime.now());
+        Task newTask = new Task(task.getId(), "Task_upd", "task_description_upd", Status.IN_Progress, TaskType.TASK, 60, LocalDateTime.now().plusMinutes(30));
         manager.updateTask(newTask);
         assertEquals(task.getTittle(), newTask.getTittle(), "Титл не обновился");
         assertEquals(task.getDescription(), newTask.getDescription(), "Описание не обновилось");
@@ -130,7 +118,7 @@ public class TaskManagerTest {
         manager.addNewEpic(epicOne);
         Subtask subtask = new Subtask("SUB1", "OPIS1", 1, TaskType.SUBTASK, 10, LocalDateTime.now());
         manager.addNewSubtask(subtask);
-        Subtask newSubtask = new Subtask(subtask.getId(), "SUB_upd", "OPIS_upd", Status.IN_Progress, TaskType.SUBTASK, 1, 60, LocalDateTime.now());
+        Subtask newSubtask = new Subtask(subtask.getId(), "SUB_upd", "OPIS_upd", Status.IN_Progress, TaskType.SUBTASK, 1, 60, LocalDateTime.now().plusMinutes(60));
         manager.updateSubtask(newSubtask);
         assertEquals(subtask.getTittle(), newSubtask.getTittle(), "Титл не обновился");
         assertEquals(subtask.getDescription(), newSubtask.getDescription(), "Описание не обновилось");

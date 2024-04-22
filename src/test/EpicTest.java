@@ -1,7 +1,7 @@
 package test;
 
 import managers.Managers;
-import managers.TaskManager;
+import interfaces.TaskManager;
 import managers.TaskType;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;

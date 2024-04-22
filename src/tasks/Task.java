@@ -4,6 +4,7 @@ import managers.TaskType;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
+import java.util.Objects;
 
 public class Task {
     protected int id;
@@ -13,7 +14,6 @@ public class Task {
     private TaskType taskType;
     private Duration duration;
     private LocalDateTime startTime;
-    private LocalDateTime endTime;
 
     public Task(String tittle, String description, TaskType taskType, long durationMinutes, LocalDateTime startTime) {
         this.tittle = tittle;
@@ -21,7 +21,6 @@ public class Task {
         this.taskType = taskType;
         this.duration = Duration.ofMinutes(durationMinutes);
         this.startTime = startTime;
-        this.endTime = calculateEndTime();
         status = Status.NEW;
     }
 
@@ -34,7 +33,6 @@ public class Task {
         this.duration = Duration.ofMinutes(durationMinutes);
         this.startTime = startTime;
         this.taskType = taskType;
-        this.endTime = calculateEndTime();
     }
 
     public Duration getDuration() {
@@ -97,16 +95,25 @@ public class Task {
         return startTime.plus(duration);
     }
 
-    public LocalDateTime getEndTime() {
-        return endTime;
-    }
-
     public void setDuration(Duration duration) {
         this.duration = duration;
     }
 
-    public void setEndTime(LocalDateTime endTime) {
-        this.endTime = endTime;
+    public LocalDateTime getEndTime() {
+        return startTime.plusMinutes(duration.toMinutes());
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Task task = (Task) o;
+        return id == task.id && Objects.equals(tittle, task.tittle) && Objects.equals(description, task.description) && status == task.status && taskType == task.taskType && Objects.equals(duration, task.duration) && Objects.equals(startTime, task.startTime);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, tittle, description, status, taskType, duration, startTime);
     }
 
     @Override

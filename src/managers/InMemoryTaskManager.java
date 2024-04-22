@@ -1,6 +1,8 @@
 package managers;
 
 import exceptions.CheckOverTimeException;
+import interfaces.HistoryManager;
+import interfaces.TaskManager;
 import tasks.Epic;
 import tasks.Status;
 import tasks.Subtask;
@@ -39,14 +41,6 @@ public class InMemoryTaskManager implements TaskManager {
 
     public TreeSet<Task> getPrioritizedTasks() {
         return pTasks;
-    }
-
-    private boolean checkOver(Task task) {
-        boolean b = false;
-        for (Task t : pTasks) {
-            b = t.getEndTime().isAfter(task.getStartTime());
-        }
-        return b;
     }
 
     @Override
@@ -122,6 +116,9 @@ public class InMemoryTaskManager implements TaskManager {
     //    обновление task
     @Override
     public void updateTask(Task newTask) {
+        if (checkOver(newTask)) {
+            throw new CheckOverTimeException("Задача " + newTask.getTittle() + " пересекается с другой");
+        }
         Task task = tasks.get(newTask.getId());
         task.setTittle(newTask.getTittle());
         task.setDescription(newTask.getDescription());
@@ -229,19 +226,19 @@ public class InMemoryTaskManager implements TaskManager {
     }
 
     private void calculateDateForEpic(Epic epic) {
-        List<Subtask> listOfSub = getEpicById(epic.getId())
+        List<Subtask> subtaskList = getEpicById(epic.getId())
                 .getSubtaskId()
                 .stream()
                 .map(this::getSubtaskById)
                 .filter(s -> s.getStatus() != Status.DONE)
                 .collect(Collectors.toList());
 
-        LocalDateTime startTime = listOfSub
+        LocalDateTime startTime = subtaskList
                 .stream()
                 .map(Task::getStartTime)
                 .min(LocalDateTime::compareTo).get();
 
-        LocalDateTime endTime = listOfSub
+        LocalDateTime endTime = subtaskList
                 .stream()
                 .map(Task::getStartTime)
                 .max(LocalDateTime::compareTo).get();
@@ -277,6 +274,9 @@ public class InMemoryTaskManager implements TaskManager {
     //    обновление subtask
     @Override
     public void updateSubtask(Subtask newSubtask) {
+        if (checkOver(newSubtask)) {
+            throw new CheckOverTimeException("Задача " + newSubtask.getTittle() + " пересекается с другой");
+        }
         Subtask subtask = subtasks.get(newSubtask.getId());
         subtask.setDescription(newSubtask.getDescription());
         subtask.setTittle(newSubtask.getTittle());
@@ -359,6 +359,14 @@ public class InMemoryTaskManager implements TaskManager {
     @Override
     public void remove(int id) {
         historyManager.remove(id);
+    }
+
+    private boolean checkOver(Task task) {
+        boolean b = false;
+        for (Task t : pTasks) {
+            b = t.getEndTime().isAfter(task.getStartTime());
+        }
+        return b;
     }
 
 }
