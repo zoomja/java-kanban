@@ -1,14 +1,16 @@
 package managers;
 
+import exceptions.CheckOverTimeException;
+import interfaces.HistoryManager;
+import interfaces.TaskManager;
 import tasks.Epic;
 import tasks.Status;
 import tasks.Subtask;
 import tasks.Task;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.time.LocalDateTime;
+import java.util.*;
+import java.util.stream.Collectors;
 
 public class InMemoryTaskManager implements TaskManager {
 
@@ -17,6 +19,7 @@ public class InMemoryTaskManager implements TaskManager {
     protected Map<Integer, Epic> epics;
     protected Map<Integer, Subtask> subtasks;
     protected final HistoryManager historyManager;
+    protected TreeSet<Task> pTasks;
 
     int id = 0;
 
@@ -25,6 +28,10 @@ public class InMemoryTaskManager implements TaskManager {
         epics = new HashMap<>();
         subtasks = new HashMap<>();
         historyManager = Managers.getDefaultHistoryManager();
+        pTasks = new TreeSet<>(Comparator.comparing(
+                Task::getStartTime,
+                Comparator.nullsLast(Comparator.naturalOrder())
+        ));
     }
 
 
@@ -32,12 +39,21 @@ public class InMemoryTaskManager implements TaskManager {
         return ++id;
     }
 
+    public TreeSet<Task> getPrioritizedTasks() {
+        return pTasks;
+    }
+
     @Override
     public void addNewTask(Task task) {
-        if(task.getId() == 0) {
+        if (checkOver(task)) {
+            throw new CheckOverTimeException("Задача " + task.getTittle() + " пересекается с другой");
+        }
+
+        if (task.getId() == 0) {
             task.setId(countId());
         }
         tasks.put(task.getId(), task);
+        pTasks.add(task);
         System.out.println("id - " + task.getId() + " / " + task.getTittle() + " / " + task.getDescription());
     }
 
@@ -48,6 +64,7 @@ public class InMemoryTaskManager implements TaskManager {
         if (task != null) {
             historyManager.addTask(task);
         }
+        pTasks.add(task);
         return tasks.get(taskId);
     }
 
@@ -99,6 +116,9 @@ public class InMemoryTaskManager implements TaskManager {
     //    обновление task
     @Override
     public void updateTask(Task newTask) {
+        if (checkOver(newTask)) {
+            throw new CheckOverTimeException("Задача " + newTask.getTittle() + " пересекается с другой");
+        }
         Task task = tasks.get(newTask.getId());
         task.setTittle(newTask.getTittle());
         task.setDescription(newTask.getDescription());
@@ -177,6 +197,9 @@ public class InMemoryTaskManager implements TaskManager {
     //    создание subtask
     @Override
     public void addNewSubtask(Subtask subtask) {
+        if (checkOver(subtask)) {
+            throw new CheckOverTimeException("Задача " + subtask.getTittle() + " пересекается с другой");
+        }
         if (subtask.getId() == 0) {
             subtask.setId(countId());
         }
@@ -185,11 +208,43 @@ public class InMemoryTaskManager implements TaskManager {
         ArrayList<Integer> subtasksId = epic.getSubtaskId();
         int subtaskId = subtask.getId();
         subtasks.put(subtaskId, subtask);
+        pTasks.add(subtask);
         subtasksId.add(subtaskId);
         epic.setSubtaskId(subtasksId);
 
         System.out.println("В эпик ID-" + epicId + " добавлен новый Subtask");
         calculateEpicStatus(epicId);
+        epic.setStartTime(pTasks.
+                stream().filter(sub -> sub.getTaskType() == TaskType.SUBTASK)
+                .findFirst().get().getStartTime()
+        );
+        epic.setEndTime(pTasks.
+                stream().filter(sub -> sub.getTaskType() == TaskType.SUBTASK)
+                .reduce((first, second) -> second).get().getEndTime()
+        );
+        epic.setDuration(epic.getDuration().plusMinutes(subtask.getDuration().toMinutes()));
+    }
+
+    private void calculateDateForEpic(Epic epic) {
+        List<Subtask> subtaskList = getEpicById(epic.getId())
+                .getSubtaskId()
+                .stream()
+                .map(this::getSubtaskById)
+                .filter(s -> s.getStatus() != Status.DONE)
+                .collect(Collectors.toList());
+
+        LocalDateTime startTime = subtaskList
+                .stream()
+                .map(Task::getStartTime)
+                .min(LocalDateTime::compareTo).get();
+
+        LocalDateTime endTime = subtaskList
+                .stream()
+                .map(Task::getStartTime)
+                .max(LocalDateTime::compareTo).get();
+
+        epic.setStartTime(startTime);
+        epic.setEndTime(endTime);
     }
 
     // Метод для вывода всех эпиков с их подзадачами
@@ -219,6 +274,9 @@ public class InMemoryTaskManager implements TaskManager {
     //    обновление subtask
     @Override
     public void updateSubtask(Subtask newSubtask) {
+        if (checkOver(newSubtask)) {
+            throw new CheckOverTimeException("Задача " + newSubtask.getTittle() + " пересекается с другой");
+        }
         Subtask subtask = subtasks.get(newSubtask.getId());
         subtask.setDescription(newSubtask.getDescription());
         subtask.setTittle(newSubtask.getTittle());
@@ -270,6 +328,7 @@ public class InMemoryTaskManager implements TaskManager {
             System.out.println("Статус эпика " + oldStatus);
         }
     }
+
     @Override
     public void deleteAllEpics() {
         subtasks.clear();
@@ -300,6 +359,14 @@ public class InMemoryTaskManager implements TaskManager {
     @Override
     public void remove(int id) {
         historyManager.remove(id);
+    }
+
+    private boolean checkOver(Task task) {
+        boolean b = false;
+        for (Task t : pTasks) {
+            b = t.getEndTime().isAfter(task.getStartTime());
+        }
+        return b;
     }
 
 }

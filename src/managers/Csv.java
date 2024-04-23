@@ -8,6 +8,7 @@ import tasks.Task;
 
 import java.io.File;
 import java.io.IOException;
+import java.time.LocalDateTime;
 
 public class Csv {
 
@@ -19,15 +20,15 @@ public class Csv {
         switch (TaskType.valueOf(type)) {
             case EPIC:
                 return new Epic(
-                        Integer.parseInt(lines[0]), lines[2], lines[4], Status.valueOf(lines[3]), TaskType.valueOf(lines[1])
+                        Integer.parseInt(lines[0]), lines[2], lines[4], Status.valueOf(lines[3]), TaskType.valueOf(lines[1]), LocalDateTime.parse(lines[5])
                 );
             case TASK:
                 return new Task(
-                        Integer.parseInt(lines[0]), lines[2], lines[4], Status.valueOf(lines[3]), TaskType.valueOf(lines[1])
+                        Integer.parseInt(lines[0]), lines[2], lines[4], Status.valueOf(lines[3]), TaskType.valueOf(lines[1]), Long.parseLong(lines[7]), LocalDateTime.parse(lines[5])
                 );
             case SUBTASK:
                 return new Subtask(
-                        Integer.parseInt(lines[0]), lines[2], lines[4], Status.valueOf(lines[3]), TaskType.valueOf(lines[1]), Integer.parseInt(lines[5])
+                        Integer.parseInt(lines[0]), lines[2], lines[4], Status.valueOf(lines[3]), TaskType.valueOf(lines[1]), Integer.parseInt(lines[8]), Long.parseLong(lines[7]), LocalDateTime.parse(lines[5])
                 );
             default:
                 return null;

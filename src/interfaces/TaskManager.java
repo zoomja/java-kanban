@@ -1,10 +1,11 @@
-package managers;
+package interfaces;
 
 import tasks.Epic;
 import tasks.Subtask;
 import tasks.Task;
 
 import java.util.List;
+import java.util.TreeSet;
 
 public interface TaskManager {
     void addNewTask(Task task);
@@ -47,5 +48,6 @@ public interface TaskManager {
     List<Task> getAllTasks();
     List<Epic> getALlEpics();
     List<Subtask> getAllSubTasks();
+    public TreeSet<Task> getPrioritizedTasks();
 
 }
