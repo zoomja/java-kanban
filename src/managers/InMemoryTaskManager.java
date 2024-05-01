@@ -115,7 +115,7 @@ public class InMemoryTaskManager implements TaskManager {
 
     //    обновление task
     @Override
-    public void updateTask(Task newTask) {
+    public Task updateTask(Task newTask) {
         if (checkOver(newTask)) {
             throw new CheckOverTimeException("Задача " + newTask.getTittle() + " пересекается с другой");
         }
@@ -125,6 +125,7 @@ public class InMemoryTaskManager implements TaskManager {
         task.setStatus(newTask.getStatus());
         tasks.put(newTask.getId(), task);
         System.out.println(newTask.getId() + " таска обновлена.");
+        return task;
     }
 
     @Override
@@ -150,7 +151,7 @@ public class InMemoryTaskManager implements TaskManager {
     }
 
     @Override
-    public void deleteSubtaskById(int subId) {
+    public boolean deleteSubtaskById(int subId) {
         if (subtasks.containsKey(subId)) {
             Subtask subtask = subtasks.get(subId);
             int epicId = subtask.getEpicId();
@@ -163,16 +164,18 @@ public class InMemoryTaskManager implements TaskManager {
         } else {
             System.out.println("Subtask с ID-" + subId + " не найден.");
         }
+        return false;
     }
 
     //    сздание эпика
     @Override
-    public void addNewEpic(Epic epic) {
+    public Epic addNewEpic(Epic epic) {
         if (epic.getId() == 0) {
             epic.setId(countId());
         }
         epics.put(epic.getId(), epic);
         System.out.println("id - " + epic.getId() + " / " + epic.getTittle() + " / " + epic.getDescription());
+        return epic;
     }
 
     //    поиск эпика по id
@@ -196,7 +199,7 @@ public class InMemoryTaskManager implements TaskManager {
 
     //    создание subtask
     @Override
-    public void addNewSubtask(Subtask subtask) {
+    public Subtask addNewSubtask(Subtask subtask) {
         if (checkOver(subtask)) {
             throw new CheckOverTimeException("Задача " + subtask.getTittle() + " пересекается с другой");
         }
@@ -223,6 +226,7 @@ public class InMemoryTaskManager implements TaskManager {
                 .reduce((first, second) -> second).get().getEndTime()
         );
         epic.setDuration(epic.getDuration().plusMinutes(subtask.getDuration().toMinutes()));
+        return subtask;
     }
 
     private void calculateDateForEpic(Epic epic) {
@@ -273,7 +277,7 @@ public class InMemoryTaskManager implements TaskManager {
 
     //    обновление subtask
     @Override
-    public void updateSubtask(Subtask newSubtask) {
+    public Subtask updateSubtask(Subtask newSubtask) {
         if (checkOver(newSubtask)) {
             throw new CheckOverTimeException("Задача " + newSubtask.getTittle() + " пересекается с другой");
         }
@@ -285,6 +289,7 @@ public class InMemoryTaskManager implements TaskManager {
 
         System.out.println("id - " + subtask.getId() + " / " + subtask.getTittle() + " / " + subtask.getDescription() + " / " + subtask.getStatus());
         calculateEpicStatus(subtask.getEpicId());
+        return subtask;
     }
 
     public void calculateEpicStatus(int epicId) {

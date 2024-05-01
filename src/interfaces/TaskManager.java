@@ -20,23 +20,23 @@ public interface TaskManager {
 
     void printAllTasks();
 
-    void updateTask(Task newTask);
+    Task updateTask(Task newTask);
 
     void deleteTask(int taskId);
 
-    void deleteSubtaskById(int subId);
+    boolean deleteSubtaskById(int subId);
 
-    void addNewEpic(Epic epic);
+    Epic addNewEpic(Epic epic);
 
     void printIdEpic(int id);
 
     void printAllEpics();
 
-    void addNewSubtask(Subtask subtask);
+    Subtask addNewSubtask(Subtask subtask);
 
     void printAllEpicsWithSubtasks();
 
-    void updateSubtask(Subtask newSubtask);
+    Subtask updateSubtask(Subtask newSubtask);
 
     void deleteAllEpics();
 

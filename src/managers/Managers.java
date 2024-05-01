@@ -3,6 +3,7 @@ package managers;
 import interfaces.HistoryManager;
 import interfaces.TaskManager;
 
+
 public class Managers {
 
     public static TaskManager getDefault() {
@@ -12,4 +13,5 @@ public class Managers {
     public static HistoryManager getDefaultHistoryManager() {
         return new InMemoryHistoryManager();
     }
+
 }

@@ -2,7 +2,9 @@ package test.managers;
 
 import exceptions.CheckOverTimeException;
 import interfaces.TaskManager;
+import managers.InMemoryTaskManager;
 import managers.TaskType;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import tasks.Epic;
 import tasks.Status;
@@ -16,6 +18,11 @@ import static org.junit.jupiter.api.Assertions.*;
 public class TaskManagerTest<T extends TaskManager> {
 
     T manager;
+
+    @BeforeEach
+    public void setUp() {
+        manager = (T) new InMemoryTaskManager();
+    }
 
     @Test
     public void checkOverTimeInTask() {
