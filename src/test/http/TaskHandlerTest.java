@@ -1,20 +1,13 @@
-package test;
+package test.http;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.TypeAdapter;
 import com.google.gson.reflect.TypeToken;
 import interfaces.TaskManager;
 import managers.InMemoryTaskManager;
-import managers.Managers;
 import managers.TaskType;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import server.HttpTaskServer;
-import server.adapters.DurationAdapter;
-import server.adapters.LocalDateTimeAdapter;
-import tasks.Status;
 import tasks.Task;
 
 import java.io.IOException;
@@ -22,13 +15,11 @@ import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
-import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static server.HttpTaskServer.*;
 
 public class TaskHandlerTest {
 
@@ -54,7 +45,7 @@ public class TaskHandlerTest {
     @Test
     void testAddTask() throws IOException, InterruptedException {
         Task task = new Task("New Task", "Test description", TaskType.TASK, 60, LocalDateTime.now());
-        String requestBody = getGson().toJson(task);
+        String requestBody = taskServer.getGson().toJson(task);
 
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(URI.create(baseUrl))
@@ -65,7 +56,7 @@ public class TaskHandlerTest {
         HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
         assertEquals(201, response.statusCode(), "Создание задачи не удалось");
 
-        Task resultTask = getGson().fromJson(response.body(), Task.class);
+        Task resultTask = taskServer.getGson().fromJson(response.body(), Task.class);
         assertNotNull(resultTask, "Возвращенная задача не должна быть null");
         assertEquals(task.getTittle(), resultTask.getTittle(), "Название задачи не совпадает");
     }
@@ -98,7 +89,7 @@ public class TaskHandlerTest {
         HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
         assertEquals(200, response.statusCode(), "Не удалось получить список задач");
 
-        List<Task> tasks = getGson().fromJson(response.body(), new TypeToken<ArrayList<Task>>(){}.getType());
+        List<Task> tasks = taskServer.getGson().fromJson(response.body(), new TypeToken<ArrayList<Task>>(){}.getType());
         assertEquals(tasks.size(), manager.getAllTasks().size(), "вернулись не все таски");
     }
 
@@ -114,7 +105,7 @@ public class TaskHandlerTest {
         HttpRequest updateRequest = HttpRequest.newBuilder()
                 .uri(URI.create(baseUrl + task.getId()))
                 .header("Content-Type", "application/json")
-                .PUT(HttpRequest.BodyPublishers.ofString(getGson().toJson(updatedTask)))
+                .PUT(HttpRequest.BodyPublishers.ofString(taskServer.getGson().toJson(updatedTask)))
                 .build();
 
         HttpResponse<String> updateResponse = client.send(updateRequest, HttpResponse.BodyHandlers.ofString());

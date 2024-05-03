@@ -2,8 +2,8 @@ package server;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpServer;
-import interfaces.HistoryManager;
 import interfaces.TaskManager;
 import managers.Managers;
 import server.adapters.DurationAdapter;
@@ -11,13 +11,15 @@ import server.adapters.LocalDateTimeAdapter;
 import server.handlers.*;
 
 import java.io.IOException;
+import java.io.OutputStream;
 import java.net.InetSocketAddress;
+import java.nio.charset.StandardCharsets;
 import java.time.Duration;
 import java.time.LocalDateTime;
 
 public class HttpTaskServer {
     private static final int PORT = 8080;
-    private static HttpServer server;
+    private static HttpServer httpServer;
     private static TaskManager taskManager;
     private static Gson gson;
 
@@ -27,7 +29,7 @@ public class HttpTaskServer {
     }
 
 
-    public static void init() throws IOException {
+    public void init() throws IOException {
         gson = new GsonBuilder()
                 .setPrettyPrinting()
                 .serializeNulls()
@@ -35,31 +37,39 @@ public class HttpTaskServer {
                 .registerTypeAdapter(Duration.class, new DurationAdapter())
                 .create();
 
-        server = HttpServer.create(new InetSocketAddress("localhost", PORT), 0);
-        server.createContext("/tasks", new TaskHandler(taskManager, gson));
-        server.createContext("/subtasks", new SubtaskHandler(taskManager, gson));
-        server.createContext("/epics", new EpicHandler(taskManager, gson));
-        server.createContext("/history", new HistoryHandler(taskManager, gson));
-        server.createContext("/prioritized", new PrioritizedHandler(taskManager));
+        httpServer = HttpServer.create(new InetSocketAddress( PORT), 0);
+        httpServer.createContext("/tasks", new TaskHandler(taskManager, gson));
+        httpServer.createContext("/subtasks", new SubtaskHandler(taskManager, gson));
+        httpServer.createContext("/epics", new EpicHandler(taskManager, gson));
+        httpServer.createContext("/history", new HistoryHandler(taskManager, gson));
+        httpServer.createContext("/prioritized", new PrioritizedHandler(taskManager));
     }
 
-    public static void start() {
-        server.start();
+    public void start() {
+        httpServer.start();
         System.out.println("Сервер запущен на порту " + PORT);
     }
 
-    public static void stop() {
-        server.stop(0);
+    public void stop() {
+        httpServer.stop(0);
         System.out.println("Остановили сервер на порту " + PORT);
     }
 
     public static void main(String[] args) throws IOException {
         taskManager = Managers.getDefault();
-        init();
-        start();
+        HttpTaskServer server = new HttpTaskServer(taskManager);
+        server.init();
+        server.start();
     }
 
-    public static Gson getGson() {
+    public Gson getGson() {
         return gson;
+    }
+
+    public static void writeResponse(HttpExchange exchange, String responseString, int responseCode) throws IOException {
+        exchange.sendResponseHeaders(responseCode, responseString.getBytes(StandardCharsets.UTF_8).length);
+        try (OutputStream os = exchange.getResponseBody()) {
+            os.write(responseString.getBytes(StandardCharsets.UTF_8));
+        }
     }
 }

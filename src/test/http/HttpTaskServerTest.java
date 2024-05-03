@@ -1,9 +1,8 @@
-package test;
+package test.http;
 
-import com.google.gson.Gson;
 import interfaces.TaskManager;
 import managers.InMemoryTaskManager;
-import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import server.HttpTaskServer;
@@ -19,32 +18,28 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 public class HttpTaskServerTest {
     TaskManager manager = new InMemoryTaskManager();
     HttpTaskServer taskServer = new HttpTaskServer(manager);
-    private HttpClient client;
-    private final String baseUrl = "http://localhost:8080/tasks/";
+    private static final String BASE_URL = "http://localhost:8080/tasks/";
 
 
     public HttpTaskServerTest() throws IOException {
     }
 
     @BeforeEach
-    void setUp() throws IOException {
+    void setUp() {
         taskServer.start();
-        client = HttpClient.newHttpClient();
+    }
+
+    @AfterEach
+    void tearDown() {
+        taskServer.stop();
     }
 
     @Test
-    public void serverShouldStart() {
+    public void serverShouldStart() throws IOException, InterruptedException {
         HttpClient httpClient = HttpClient.newBuilder().build();
-        URI uri = URI.create("http://localhost:8080/tasks");
+        URI uri = URI.create(BASE_URL);
         HttpRequest httpRequest = HttpRequest.newBuilder(uri).header("Accept", "application/json").GET().build();
-        try {
-            HttpResponse<String> response = httpClient.send(httpRequest, HttpResponse.BodyHandlers.ofString());
-            assertEquals(200, response.statusCode(), "Сервер не ответил ожидаемым статусным кодом.");
-        } catch (IOException | InterruptedException e) {
-            e.printStackTrace();
-            Thread.currentThread().interrupt();
-        } finally {
-            HttpTaskServer.stop();
-        }
+        HttpResponse<String> response = httpClient.send(httpRequest, HttpResponse.BodyHandlers.ofString());
+        assertEquals(200, response.statusCode(), "Сервер не ответил ожидаемым статусным кодом.");
     }
 }

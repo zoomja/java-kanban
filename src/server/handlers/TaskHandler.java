@@ -12,6 +12,8 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.nio.charset.StandardCharsets;
 
+import static server.HttpTaskServer.writeResponse;
+
 public class TaskHandler implements HttpHandler {
     private final TaskManager taskManager;
     private final Gson gson;
@@ -78,13 +80,6 @@ public class TaskHandler implements HttpHandler {
         } else {
             writeResponse(exchange, "Таска не найдена", 404);
         }
-    }
-
-    private void writeResponse(HttpExchange exchange, String responseString, int responseCode) throws IOException {
-        exchange.sendResponseHeaders(responseCode, responseString.getBytes(StandardCharsets.UTF_8).length);
-        OutputStream os = exchange.getResponseBody();
-        os.write(responseString.getBytes(StandardCharsets.UTF_8));
-        os.close();
     }
 
     private void handleTaskData(HttpExchange exchange, boolean isNewTask) throws IOException {
