@@ -55,7 +55,8 @@ public class HistoryHandlerTest {
         HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
         assertEquals(200, response.statusCode(), "Не удалось получить историю");
 
-        List<Task> history = taskServer.getGson().fromJson(response.body(), new TypeToken<List<Task>>(){}.getType());
+        List<Task> history = taskServer.getGson().fromJson(response.body(), new TypeToken<List<Task>>() {
+        }.getType());
         assertEquals(1, history.size(), "История должна содержать одну задачу");
     }
 }

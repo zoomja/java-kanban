@@ -89,7 +89,8 @@ public class TaskHandlerTest {
         HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
         assertEquals(200, response.statusCode(), "Не удалось получить список задач");
 
-        List<Task> tasks = taskServer.getGson().fromJson(response.body(), new TypeToken<ArrayList<Task>>(){}.getType());
+        List<Task> tasks = taskServer.getGson().fromJson(response.body(), new TypeToken<ArrayList<Task>>() {
+        }.getType());
         assertEquals(tasks.size(), manager.getAllTasks().size(), "вернулись не все таски");
     }
 
