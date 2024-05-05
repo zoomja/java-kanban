@@ -1,4 +1,4 @@
-package test.managers;
+package tests.managers;
 
 import managers.Csv;
 import managers.FileBackedTasksManager;

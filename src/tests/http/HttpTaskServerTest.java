@@ -1,4 +1,4 @@
-package test.http;
+package tests.http;
 
 import interfaces.TaskManager;
 import managers.InMemoryTaskManager;
