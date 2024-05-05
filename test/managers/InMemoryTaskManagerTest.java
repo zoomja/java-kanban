@@ -1,6 +1,5 @@
-package test.managers;
+package managers;
 
-import managers.InMemoryTaskManager;
 import org.junit.jupiter.api.BeforeEach;
 
 public class InMemoryTaskManagerTest extends TaskManagerTest<InMemoryTaskManager> {
