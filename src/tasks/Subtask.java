@@ -8,7 +8,7 @@ public class Subtask extends Task {
     public int epicId;
 
     public Subtask(String tittle, String description, int epicId, TaskType taskType, long durationMinutes, LocalDateTime startTime) {
-        super(tittle, description, taskType,durationMinutes, startTime);
+        super(tittle, description, taskType, durationMinutes, startTime);
         this.epicId = epicId;
     }
 
@@ -20,7 +20,6 @@ public class Subtask extends Task {
     public int getEpicId() {
         return epicId;
     }
-
 
 
     public void setEpicId(int epicId) {
