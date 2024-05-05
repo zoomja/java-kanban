@@ -217,12 +217,12 @@ public class InMemoryTaskManager implements TaskManager {
 
         System.out.println("В эпик ID-" + epicId + " добавлен новый Subtask");
         calculateEpicStatus(epicId);
-        epic.setStartTime(pTasks.
-                stream().filter(sub -> sub.getTaskType() == TaskType.SUBTASK)
+        epic.setStartTime(pTasks
+                .stream().filter(sub -> sub.getTaskType() == TaskType.SUBTASK)
                 .findFirst().get().getStartTime()
         );
-        epic.setEndTime(pTasks.
-                stream().filter(sub -> sub.getTaskType() == TaskType.SUBTASK)
+        epic.setEndTime(pTasks
+                .stream().filter(sub -> sub.getTaskType() == TaskType.SUBTASK)
                 .reduce((first, second) -> second).get().getEndTime()
         );
         epic.setDuration(epic.getDuration().plusMinutes(subtask.getDuration().toMinutes()));
