@@ -11,7 +11,6 @@ import tasks.Task;
 
 import java.io.IOException;
 import java.io.OutputStream;
-import java.nio.charset.StandardCharsets;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.TreeSet;
@@ -24,6 +23,7 @@ public class PrioritizedHandler implements HttpHandler {
             .registerTypeAdapter(LocalDateTime.class, new LocalDateTimeAdapter())
             .registerTypeAdapter(Duration.class, new DurationAdapter())
             .create();
+
     public PrioritizedHandler(TaskManager taskManager) {
         this.taskManager = taskManager;
     }
