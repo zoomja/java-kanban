@@ -37,7 +37,7 @@ public class HttpTaskServer {
                 .registerTypeAdapter(Duration.class, new DurationAdapter())
                 .create();
 
-        httpServer = HttpServer.create(new InetSocketAddress( PORT), 0);
+        httpServer = HttpServer.create(new InetSocketAddress(PORT), 0);
         httpServer.createContext("/tasks", new TaskHandler(taskManager, gson));
         httpServer.createContext("/subtasks", new SubtaskHandler(taskManager, gson));
         httpServer.createContext("/epics", new EpicHandler(taskManager, gson));
