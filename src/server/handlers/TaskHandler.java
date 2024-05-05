@@ -29,41 +29,44 @@ public class TaskHandler implements HttpHandler {
 
         switch (method) {
             case "GET":
-                if(path.length == 2) {
+                if (path.length == 2) {
                     getAllTasks(exchange);
                     break;
                 }
-                if (path.length == 3){
+                if (path.length == 3) {
                     getTask(exchange, Integer.parseInt(path[2]));
                     break;
                 }
             case "PUT":
-                handleTaskData(exchange, false); break;
+                handleTaskData(exchange, false);
+                break;
             case "POST":
-                handleTaskData(exchange, true); break;
+                handleTaskData(exchange, true);
+                break;
             case "DELETE":
-                deleteTask(exchange); break;
+                deleteTask(exchange);
+                break;
             default:
                 writeResponse(exchange, "Внутренняя ошибка сервера", 500);
         }
-     }
+    }
 
-     private void getAllTasks(HttpExchange exchange) throws IOException {
-         String response = gson.toJson(taskManager.getAllTasks());
-         writeResponse(exchange, response, 200);
-     }
+    private void getAllTasks(HttpExchange exchange) throws IOException {
+        String response = gson.toJson(taskManager.getAllTasks());
+        writeResponse(exchange, response, 200);
+    }
 
     private void getTask(HttpExchange exchange, int taskId) throws IOException {
-            try {
-                Task task = taskManager.getTaskById(taskId);
-                if (task != null) {
-                    writeResponse(exchange, gson.toJson(task), 200);
-                } else {
-                    writeResponse(exchange, "Таска не найдена", 404);
-                }
-            } catch (Exception e) {
-                writeResponse(exchange, "Не найдена такая задача", 400);
+        try {
+            Task task = taskManager.getTaskById(taskId);
+            if (task != null) {
+                writeResponse(exchange, gson.toJson(task), 200);
+            } else {
+                writeResponse(exchange, "Таска не найдена", 404);
             }
+        } catch (Exception e) {
+            writeResponse(exchange, "Не найдена такая задача", 400);
+        }
     }
 
     private void deleteTask(HttpExchange exchange) throws IOException {
