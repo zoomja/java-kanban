@@ -1,4 +1,4 @@
-package tests.managers;
+package test.managers;
 
 import exceptions.CheckOverTimeException;
 import interfaces.TaskManager;

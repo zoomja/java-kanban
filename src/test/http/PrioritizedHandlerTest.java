@@ -1,4 +1,4 @@
-package tests.http;
+package test.http;
 
 import com.google.gson.reflect.TypeToken;
 import interfaces.TaskManager;
